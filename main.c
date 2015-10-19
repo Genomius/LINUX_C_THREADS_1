@@ -1,32 +1,59 @@
 #include <stdio.h>
 #include <pthread.h>
-#include <GL/gl.h> 
+#include <stdlib.h>
 
-void display() { 
-    glClearColor(1,0,0,0); 
-    glClear(GL_COLOR_BUFFER_BIT); 
-    glFlush(); 
-} 
+#define SHIP_CAPACITY 7
+#define SHIP_COUNT 5
+#define PASSENGER_COUNT 10
 
-int PASSENGERS; // Пассажиры
+typedef struct PASSENGER{
+	int name;
+	int status;
+	int place_in_the_queue;
+}PASSENGER;
 
-enum PEOPLE_STATUS{
+typedef struct SHIP{
+	int name;
+	int from;
+	int to;
+}SHIP;
+
+enum PASSENGER_STATUS{
 	wait = 0,
-	up = 1,
-	down = 2
+	in_way = 1,
 };
 
-int main(void)
-{
-	printf("Введите количество пассажиров : ");
-	scanf("%d", &PASSENGERS);
+enum CITIES{
+	omsk = 0,
+	tara = 1,
+	tobolsk = 2,
+	hanti_mansijsk = 3,
+	salehad = 4
+};
 
-	glutInit(&argc, argv); 
-    glutInitWindowPosition(100,100); 
-    glutInitWindowSize(500,500); 
-    glutCreateWindow(Hello World); 
-    glutDisplayFunc(display); 
-    glutMainLoop(); 
+pthread_t SHIPS_THREADS[SHIP_COUNT]; // Нити кораблей
+pthread_t PASSENGERS_THREADS[PASSENGER_COUNT]; // Нити пассажиров
+struct PASSENGER PASSENGERS[PASSENGER_COUNT]; // Характеристики пассажиров
+struct SHIP SHIPS[SHIP_COUNT]; // Характеристики кораблей
+
+static void *ship_creation(void *ship);
+
+int main(int argc, char** argv)
+{
+	//создаем корабли
+	for(int i=0;i<SHIP_COUNT;i++){
+		SHIPS[i].name = i;
+		SHIPS[i].from = i;
+		SHIPS[i].to = i;
+		printf("main = %d\n", i);
+		pthread_create(&SHIPS_THREADS[i], NULL, ship_creation, (void *)&SHIPS[i]);
+	}
 
 	return 0;
+}
+
+static void *ship_creation(void *ship){
+	SHIP *cur_ship = (SHIP*) ship;
+
+	printf("additional = %d\n", cur_ship->name);
 }

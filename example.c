@@ -279,7 +279,7 @@ void wiseman4()//4-ый мудрец
 	{
 		wiseman_characters[3].status = think;
 		drawText("X", tableCoordX + dTX, tableCoordY + dTY, Shaded, wiseman_characters[3].color);
-	33	time = 10000 * (3+rand()%6);
+		time = 10000 * (3+rand()%6);
 		for(i = 0; i < time; i++)
 		{	
 			if(strchr(letter, 'f') != NULL || strchr(letter, 'F') != NULL)
@@ -312,7 +312,7 @@ void wiseman5()//5-ый мудрец
 			if(strchr(letter, 'g') != NULL || strchr(letter, 'G') != NULL)
 			{
 				letter[0] = ' ';
-	3			break;
+				break;
 			}
 			usleep(100);
 		}
