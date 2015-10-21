@@ -1,4 +1,4 @@
-<h1>LINUX_C_THREADS</h1>
+# LINUX_C_THREADS
 
 <div>
 	<p>Вариант №65</p>
@@ -9,15 +9,11 @@
 	</p>
 </div>
 
-<h2>gcc main.c -o main -std=c99 -lpthread -g && ./main</h2>
-<ul>
-	<li>-std=c99 - C99-стандарт Си. Флаг был добавлен для использования конструкции for(int i, , );</li>
-	<li>-lpthread - Использование потоков в программе</li>
-	<li>-g - Включен режим отладки </li>
-</ul>
+## gcc main.c -o main -std=c99 -lpthread -g && ./main
+	* -std=c99 - C99-стандарт Си. Флаг был добавлен для использования конструкции for(int i, , );
+	* -lpthread - Использование потоков в программе
+	* -g - Включен режим отладки
 
-<h2>Отладка gdb</h2>
-<ul>
-	<li>$ gdb main</li>
-	<li>(gdb) run</li>
-</ul>
+## Отладка gdb
+	* $ gdb main
+	* (gdb) run
