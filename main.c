@@ -74,7 +74,6 @@ int main(int argc, char** argv)
 		SHIPS[i].on_board = 0;
 		SHIPS[i].arrive_time = 0;
 
-		//printf("main_thread_ship_creating = %d\n", i);
 		pthread_create(&SHIPS_THREADS[i], NULL, ship_creation, (void *)&SHIPS[i]);
 	}
 
@@ -92,9 +91,9 @@ int main(int argc, char** argv)
 			passenger_number++;
 		}
 	}
-	terminal_display();
+
 	while(true){ // Каждую секунду обновляем консоль
-		
+		terminal_display();
 		sleep(1);
 	}
 
@@ -104,8 +103,12 @@ int main(int argc, char** argv)
 static void *ship_creation(void *ship){
 	SHIP *cur_ship = (SHIP*) ship; // Текущий корабль
 
-	while(true){ // Работа коробля
+	int wait_time = rand() % 3+1;
+	sleep(wait_time); // Перед очередной рейсом ждем случайное время от 1 до 3 секунд
+
+	while(true){ // Работа кора бля
 		int city_passanger_count;
+
 		while(!SHIPS[cur_ship->id].in_way){
 			city_passanger_count = 0;
 
@@ -115,8 +118,10 @@ static void *ship_creation(void *ship){
 				}
 			}
 
-			if(SHIPS[cur_ship->id].on_board == 7 || city_passanger_count == 0) // Отплываем, если корабль полон или в городе не осталось пассажиров
+			if(SHIPS[cur_ship->id].on_board == 7){ // Отплываем, если корабль полон или в городе не осталось пассажиров
 				SHIPS[cur_ship->id].in_way = true;
+				//log("Корабль %d выплывает\t Пассажиров: %d\t В городе %s осталось %d\n", cur_ship->id, SHIPS[cur_ship->id].on_board, city_display(SHIPS[cur_ship->id].from), city_passanger_count);
+			}
 		}
 	
 		int way_time = 10;
@@ -132,7 +137,7 @@ static void *ship_creation(void *ship){
 					if(SHIPS[cur_ship->id].from != random2){
 						SHIPS[cur_ship->id].to = random2;
 						break;
-					}			
+					}
 				}
 
 				break;
@@ -155,12 +160,11 @@ static void *passenger_creation(void *passenger){
 
 					SHIPS[i].on_board++; // Занимаем место на корабле
 
+					sleep(1); // Ждем секунду, пока пассажир заходит на борт корабля :)
 					break;
 				}
 			}
 		}
-
-		sleep(1); // Ждем секунду, пока пассажир заходит на борт корабля :)
 
 		while(PASSENGERS[cur_passenger->id].in_way){ // Пока пассажир на борту
 			if(!SHIPS[PASSENGERS[cur_passenger->id].ship].in_way){ // Если корабль прибыл в порт пункта назначения
@@ -172,9 +176,6 @@ static void *passenger_creation(void *passenger){
 				PASSENGERS[cur_passenger->id].city = SHIPS[PASSENGERS[cur_passenger->id].ship].from; // Теперь пассажир в городе, в который нас доставляет корабль
 			}
 		}
-
-		int wait_time = rand() % 10+1;
-		sleep(wait_time); // Перед очередной рейсом ждем случайное время от 1 до 10 секунд
 	}
 }
 
@@ -206,21 +207,30 @@ static void terminal_display(){
 			cities_passenger_count[PASSENGERS[i].city]++;
 		}
 	
-	//printf("\n\n%s\n   |\t\t\t\t\t\t\t\t\t\t\t|\n", "   +------------------------------------------------------------------------------------+");
-	//printf("   |\t%s", "Корабли в пути:\t\t\t\t\t\t\t\t\t|\n");
-	for(int i=0;i<size(SHIPS);i++)
+	printf("\n\n%s\n   |\t\t\t\t\t\t\t\t\t\t\t|\n", "   +------------------------------------------------------------------------------------+");
+	printf("   |\t%s", "Корабли в пути:\t\t\t\t\t\t\t\t\t|\n");
+	for(int i=0;i<size(SHIPS);i++){
 		if(!SHIPS[i].in_way)
 			cities_ships_count[SHIPS[i].from]++;
 		else
-			//printf("   |\t%d %s - %s\t\tна борту %d человек\tприбудет через %dс.\t|\n", SHIPS[i].id+1, city_display(SHIPS[i].from), city_display(SHIPS[i].to), SHIPS[i].on_board, SHIPS[i].arrive_time);
-
-
-	//printf("%s", "   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t\t\t|\n");
-	for(int i=0;i<CITY_COUNT;i++){
-		//printf("   |\t%s\t\t\tВ ожидании: человек %d\tсудов: %d\t\t|\n", city_display(i), cities_passenger_count[i], cities_ships_count[i]);
-		log("Город: %s\t Пассажиров: %d\t Кораблей: %d\n", city_display(i), cities_passenger_count[i], cities_ships_count[i]);
+			printf("   |\t%d %s - %s\t\tна борту %d человек\tприбудет через %dс.\t|\n", SHIPS[i].id+1, city_display(SHIPS[i].from), city_display(SHIPS[i].to), SHIPS[i].on_board, SHIPS[i].arrive_time);
 	}
-	//printf("   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t  by DenisBaylo |\n%s\n\n", "   +------------------------------------------------------------------------------------+");
+
+	printf("%s", "   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t\t\t|\n");
+	for(int i=0;i<CITY_COUNT;i++){
+		printf("   |\t%s\t\t\tВ ожидании: человек %d\tсудов: %d\t\t|\n", city_display(i), cities_passenger_count[i], cities_ships_count[i]);
+	}
+	printf("   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t\t\t|\n   |\t\t\t\t\t\t\t\t\t  by DenisBaylo |\n%s\n\n", "   +------------------------------------------------------------------------------------+");
+
+	printf("   Уровень загруженности судна:\n"); 
+	for(int i=0;i<SHIP_COUNT;i++){
+		printf("   %d корабль: %s %dc\t", SHIPS[i].id+1, SHIPS[i].in_way ? "(в пути)" : "( ждем )", SHIPS[i].arrive_time);
+		for(int j=0;j<SHIPS[i].on_board;j++){
+			printf("| ");
+		}
+		printf("\n");
+	}
+
 }
 
 
