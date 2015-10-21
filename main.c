@@ -118,7 +118,7 @@ static void *ship_creation(void *ship){
 				}
 			}
 
-			if(SHIPS[cur_ship->id].on_board == 7){ // Отплываем, если корабль полон или в городе не осталось пассажиров
+			if(SHIPS[cur_ship->id].on_board == 7 || city_passanger_count == 0){ // Отплываем, если корабль полон или в городе не осталось пассажиров
 				SHIPS[cur_ship->id].in_way = true;
 				//log("Корабль %d выплывает\t Пассажиров: %d\t В городе %s осталось %d\n", cur_ship->id, SHIPS[cur_ship->id].on_board, city_display(SHIPS[cur_ship->id].from), city_passanger_count);
 			}
